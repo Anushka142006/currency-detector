@@ -61,28 +61,34 @@ function listenForLanguage() {
 
 function startDetectionLoop() {
     const context = canvas.getContext('2d');
+    // Slowed down to 3 seconds to give Render's CPU time to think
     setInterval(() => {
         if (!isDetectionActive) return;
 
-        // Capture frame from video to canvas
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Convert to image and send to Render
-        const imageData = canvas.toDataURL('image/jpeg', 0.5);
+        const imageData = canvas.toDataURL('image/jpeg', 0.4); // Compressed more for speed
         
+        // Use relative path "/" to ensure it hits your Render server correctly
         fetch("/process_frame", {
             method: "POST",
             body: JSON.stringify({ image: imageData }),
             headers: { "Content-Type": "application/json" }
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Server busy");
+            return res.json();
+        })
         .then(data => {
+            console.log("Detection:", data.notes);
             if (data.notes && data.notes.length > 0) {
-                // Handle speech logic here similar to previous version
-                speak(data.notes.join(" "), translations[selectedLanguage].code);
+                // Prepare the sentence
+                let textToSpeak = data.notes.join(" and ");
+                speak(textToSpeak, translations[selectedLanguage].code);
             }
-        });
-    }, 2000);
+        })
+        .catch(err => console.log("Detection error:", err));
+    }, 3000); 
 }
