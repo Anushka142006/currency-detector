@@ -1,5 +1,5 @@
 flask
-opencv-python-headlessflask
+opencv-python-headless
 ultralytics
 torch
 torchvision
