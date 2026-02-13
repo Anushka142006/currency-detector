@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Currency Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Currency Detector</title>
+    <link rel="manifest" href="/static/manifest.json">
     <style>
-        body { text-align: center; font-family: 'Segoe UI', Arial; background: #121212; color: white; }
-        .box { margin: 20px auto; width: 80%; max-width: 800px; background: #1e1e1e; padding: 20px; border-radius: 15px; }
-        img { width: 100%; border: 3px solid #444; border-radius: 10px; }
-        #status { font-size: 24px; color: #00ffcc; margin: 15px 0; }
-        button { padding: 15px 40px; font-size: 20px; cursor: pointer; border-radius: 30px; border: none; background: #28a745; color: white; }
+        body { font-family: Arial; text-align: center; background: #121212; color: white; margin: 0; padding: 20px; }
+        #video-container { width: 100%; max-width: 500px; margin: auto; position: relative; border: 3px solid #28a745; border-radius: 10px; overflow: hidden; }
+        video { width: 100%; display: block; }
+        canvas { display: none; }
+        .btn { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        #status { margin-top: 10px; color: #aaa; }
     </style>
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}");
-  }
-</script>
 </head>
 <body>
-    <div class="box">
-        <h1>Currency Assistant</h1>
-        <div id="startArea">
-            <button onclick="startApp()">Start System</button>
-        </div>
-        <div id="appArea" style="display:none;">
-            <div id="status">Initializing...</div>
-            <img src="{{ url_for('video_feed') }}">
-        </div>
+    <h2>Currency Assistant</h2>
+    <div id="video-container">
+        <video id="video" autoplay playsinline></video>
     </div>
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <canvas id="canvas"></canvas>
+    
+    <div id="startArea">
+        <button class="btn" onclick="startApp()">Start System</button>
+    </div>
+    
+    <div id="status">Ready. Click Start.</div>
+
+    <script src="/static/main.js"></script>
 </body>
 </html>
