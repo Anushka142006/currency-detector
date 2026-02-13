@@ -11,17 +11,20 @@ def index():
 
 @app.route("/process_frame", methods=["POST"])
 def process_frame():
-    data = request.json['image']
-    # Decode image from phone
-    encoded_data = data.split(',')[1]
-    nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
-    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    try:
+        data = request.json['image']
+        encoded_data = data.split(',')[1]
+        nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Run YOLO
-    results = model(frame, conf=0.6)
-    notes = [model.names[int(box.cls[0])] for r in results for box in r.boxes]
-    
-    return jsonify({"notes": notes})
+        results = model(frame, conf=0.5)
+        notes = [model.names[int(box.cls[0])] for r in results for box in r.boxes]
+        
+        print(f"Detected: {notes}") # This will show up in Render Logs
+        return jsonify({"notes": notes})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"notes": [], "error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
